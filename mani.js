@@ -69,7 +69,7 @@ function gotResult(error, results) {
     if (error) {
         console.log(error);
     }
-    console.log(results);
+    console.log(results + "Hie");
     document.getElementById("label").innerHTML = "Label: " + results[0].label;
     document.getElementById('confidence').innerHTML = "Confidens: " + Math.round(results[0].confidence * 100) + "%";
 
