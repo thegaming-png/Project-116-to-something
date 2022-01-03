@@ -11,6 +11,10 @@ function setup() {
     synth = window.speechSynthesis;
 }
 
+function draw(){
+    classifier.classify(video, gotResult);
+}
+
 
 function clearCanvas() {
     background("White");
@@ -31,3 +35,25 @@ function RandomValue(){
     document.getElementById("randomText").innerHTML = "Sketch to be Drawn : " + randomThing;
 }
 
+
+function gotResult(error, results){
+    if(error){
+      console.log(error + " " + "Error Found");
+    }else{
+        if((PreviosResult != results[0].label) && (results[0].confidence > 0.5)){
+          console.log(results);
+          confidence = Math.round( results[0].confidence * 100);
+          Label = results[0].label;
+          PreviosResult = Label;
+          if(LabelSpan.Inner == results[0].label){
+            confidenceSpan.innerHTML = "Object : " + confidence ;
+            LabelSpan.innerHTML = "Your Sketch : " + Label;
+          }
+        }else if(LabelSpan.value == results[0].label){
+          // do nothing
+        }
+  
+      
+     
+    }
+}
