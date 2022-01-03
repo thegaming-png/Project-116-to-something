@@ -1,3 +1,14 @@
+timer_counter = 0;
+timer_check = "";
+drawn_sketch = "";
+answer_holder = "";
+score = 0;
+
+
+
+
+
+
 function preload() {
     classifier = ml5.imageClassifier("DoodleNet");
 }
@@ -11,9 +22,7 @@ function setup() {
     synth = window.speechSynthesis;
 }
 
-function draw(){
-    classifier.classify(video, gotResult);
-}
+
 
 
 function clearCanvas() {
@@ -25,7 +34,7 @@ function classifyCanvas() {
     classifier.classify(canvas, gotResult);
 }
 
-All_the_Names = ["Cake", "Ball", "Camel", "Bread", "Brain", "Tree", "Eye", "Dolphin", "Hand", "Flower", "HotDog", "Burger", "Elephant", "fork", "Knee", "grass", "Guitar", "Grill", "Ice-Cream"];
+All_the_Names = ["Rain", "Cake", "Ball", "Camel", "Bread", "Brain", "Tree", "Eye", "Dolphin", "Hand", "Flower", "HotDog", "Burger", "Elephant", "fork", "Knee", "grass", "Guitar", "Grill", "Ice-Cream"];
 
 function RandomValue(){
     randomValue = Math.floor(Math.random() * 18);
@@ -33,27 +42,52 @@ function RandomValue(){
     console.log(randomThing);
 
     document.getElementById("randomText").innerHTML = "Sketch to be Drawn : " + randomThing;
+    sketch = randomThing;
+    localStorage.setItem("sketch", sketch);
+}
+
+function draw(){
+    check_sketch();
+    if(drawn_sketch == localStorage.getItem("sketch")){
+        answer_holder = "set";
+        score = score+1;
+        document.getElementById("score").innerHTML = "Score: "+score;
+    }
+
+
+    strokeWeight(13);
+    stroke(0);
+    if (mouseIsPressed) {
+        line(pmouseX, pmouseY, mouseX, mouseY)
+    }
+
 }
 
 
-function gotResult(error, results){
-    if(error){
-      console.log(error + " " + "Error Found");
-    }else{
-        if((PreviosResult != results[0].label) && (results[0].confidence > 0.5)){
-          console.log(results);
-          confidence = Math.round( results[0].confidence * 100);
-          Label = results[0].label;
-          PreviosResult = Label;
-          if(LabelSpan.Inner == results[0].label){
-            confidenceSpan.innerHTML = "Object : " + confidence ;
-            LabelSpan.innerHTML = "Your Sketch : " + Label;
-          }
-        }else if(LabelSpan.value == results[0].label){
-          // do nothing
-        }
-  
-      
-     
+
+function gotResult(error, results) {
+    if (error) {
+        console.log(error);
+    }
+    console.log(results);
+    document.getElementById("label").innerHTML = "Label: " + results[0].label;
+    document.getElementById('confidence').innerHTML = "Confidens: " + Math.round(results[0].confidence * 100) + "%";
+
+    utterThis = new SpeechSynthesisUtterance(results[0].label)
+    synth.speak(utterThis);
+
+
+}
+function check_sketch(){
+    timer_counter++;
+    document.getElementById("Timer").innerHTML = "Timer: "+timer_counter;
+    if(timer_counter>500){
+        timer_counter = 0;
+        timer_check = "completed";
+    }
+    if(timer_check == "completed" || answer_holder == "set"){
+        timer_check = "";
+        answer_holder = "";
+        RandomValue();
     }
 }
